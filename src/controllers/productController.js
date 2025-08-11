@@ -42,21 +42,78 @@ productController.post("/create", async (req, res) => {
 
 
 // DETAILS
-productController.get("/:productId/details", (req,res) => {
+productController.get("/:productId/details", async (req,res) => {
     const productId = req.params.productId
-    console.log(productId)
-    res.render('product/details', {title: "Details Page"})
+    
+    const product = await productService.getOne(productId).lean()
+
+    const isOwner = product.owner && product.owner.toString() === req.user?._id;
+
+    res.render('product/details', {product, isOwner, title: "Details Page"})
 })
 
-productController.get("/details/edit", (req,res) => {
-    res.render('product/edit', {title: "Edit Page"})
+
+//EDIT
+
+productController.get("/:productId/edit", async(req,res) => {
+    const productId = req.params.productId
+
+    const product = await productService.getOne(productId).lean()
+
+    res.render('product/edit', {product, title:"Edit Page"})
+
 })
+
+
+productController.post('/:productId/edit', async (req,res) => {
+    const productId = req.params.productId;
+    const productData = req.body
+
+    await productService.edit(productId, productData)
+
+    res.redirect(`/products/${productId}/details`)
+})
+
+
+
+
+//DELETE
+productController.get("/:productId/delete", async(req, res) => {
+    const productId = req.params.productId
+
+    const product = await productService.getOne(productId).lean();
+    
+    if(product.owner?.toString() !== req.user._id){
+        res.setError('You cannot delete this movie!');
+        return res.redirect('/404');
+    }
+
+    await productService.remove(productId);
+
+    res.redirect('/');
+})
+
 
 
 
 // SEARCH
-productController.get("/search", (req,res) => {
-    res.render('product/search', {title: "Search Page"})
+productController.get('/search', async (req,res) =>{
+    const products = await productService.getAll().lean();
+
+    res.render('product/search', {products, title: "Search page"})
 })
+
+
+productController.post('/search', async (req, res) => {
+    console.log(req.body)
+    try {
+        const products = await productService.search(req.body.search); 
+
+        res.render('product/search', { products }); 
+    } catch (err) {
+        const error = getErrorMessage(err);
+        return res.render('product/search', {error, title:'Seach Page'})
+    }
+});
 
 export default productController
