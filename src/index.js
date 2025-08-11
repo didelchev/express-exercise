@@ -1,6 +1,7 @@
 import express from 'express';
+import handlebars from 'express-handlebars'
 import mongoose from 'mongoose';
-
+import routes from './routes.js';
 
 const app = express();
 
@@ -14,9 +15,26 @@ mongoose
     .catch((err) => console.log(`DB Failed to connect ${err}`))
 
 
-app.get('/', (req,res) => {
-    res.send('Works')
-})
+app.engine(
+    "hbs",
+    handlebars.engine({
+        extname: 'hbs'
+    })
+)
+
+app.set("views", "src/views")
+
+app.set("view engine", "hbs")
+
+app.use("/styles", express.static("src/public"))
+
+app.use(express.urlencoded({ extended: false }));
+
+
+app.use(routes)
+
+
+
 
 app.listen(port, ()=> {
     console.log(`Server is listening on http://localhost:${port} ...`)
