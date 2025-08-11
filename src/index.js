@@ -2,6 +2,8 @@ import express from 'express';
 import handlebars from 'express-handlebars'
 import mongoose from 'mongoose';
 import routes from './routes.js';
+import cookieParser from "cookie-parser";
+import { authMiddleware } from './middlewares/authMiddleware.js';
 
 const app = express();
 
@@ -30,11 +32,11 @@ app.use("/styles", express.static("src/public"))
 
 app.use(express.urlencoded({ extended: false }));
 
+app.use(cookieParser());
+
+app.use(authMiddleware)
 
 app.use(routes)
-
-
-
 
 app.listen(port, ()=> {
     console.log(`Server is listening on http://localhost:${port} ...`)
