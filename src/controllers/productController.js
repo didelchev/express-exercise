@@ -6,8 +6,10 @@ const productController = Router();
 
 
 // HOME 
-productController.get("/catalog", (req, res) => {
-    res.render('product/catalog', {title: "Catalog Page"})
+productController.get("/catalog", async (req, res) => {
+    const products = await productService.getAll().lean();
+
+    res.render('product/catalog', {products, title: "Catalog Page"})
 })
 
 
