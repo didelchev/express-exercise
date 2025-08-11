@@ -14,7 +14,7 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
+  "type": "module",
   "bugs": {
     "url": "https://github.com/didelchev/express-exercise/issues"
   },
@@ -23,6 +23,7 @@
     "nodemon": "^3.1.10"
   },
   "dependencies": {
+    "dotenv": "^17.2.1",
     "express": "^5.1.0"
   }
 }
