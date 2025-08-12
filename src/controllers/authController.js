@@ -14,17 +14,18 @@ authController.get('/register',  (req, res) => {
 
 
 authController.post("/register", async (req, res) => {
-    const { name, email, password, rePassowrd} = req.body;
+    const { name, email, password, rePassword} = req.body;
 
-    if(password !== rePassowrd){
+    if(password !== rePassword){
+        console.log(password, rePassword)
         return res.render('auth/register', { error: "Passwords missmatch"});
          
     }
 
     try {
-        await authService.register(name, email, password, rePassowrd)
+        await authService.register(name, email, password, rePassword)
         
-    } catch (error) {
+    } catch (err) {
         return res.render('auth/register', { error: getErrorMessage(err), email });
     }
 

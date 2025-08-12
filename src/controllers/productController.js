@@ -1,6 +1,7 @@
 import { Router  } from "express";
 import productService from "../services/productService.js";
 import { getErrorMessage } from "../utils/errorUtils.js";
+import { checkIsOwner, isOwner } from "../middlewares/authMiddleware.js";
 
 const productController = Router();
 
@@ -49,7 +50,14 @@ productController.get("/:productId/details", async (req,res) => {
 
     const isOwner = product.owner && product.owner.toString() === req.user?._id;
 
-    res.render('product/details', {product, isOwner, title: "Details Page"})
+    const isLoogedIn = req.user ? true : false
+
+    const isRecommended = product.recommendList.some((element) => req.user._id === element._id.toString())
+
+
+
+
+    res.render('product/details', {product, isOwner, isLoogedIn, isRecommended, title: "Details Page"})
 })
 
 
@@ -115,5 +123,27 @@ productController.post('/search', async (req, res) => {
         return res.render('product/search', {error, title:'Seach Page'})
     }
 });
+
+
+
+//RECOMMEND 
+
+productController.get("/:productId/recommend", async (req, res) => {
+    const productId = req.params.productId
+    const userId = req.user._id
+    const isRecommended = Boolean()
+
+    try {
+        await productService.recommend(productId, userId)
+        isRecommended = true
+        res.render(`/products/${productId}/details`, { isRecommended })
+    } catch (error) {
+        
+    }
+
+
+
+})
+
 
 export default productController

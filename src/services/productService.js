@@ -24,6 +24,11 @@ const search = async (productName) => {
     };
 
 
+const recommend = async (productId, userId) => {
+  await Product.findByIdAndUpdate(productId, { $addToSet: { recommendList: userId } });
+
+};
+
 
 
 export default {
@@ -33,5 +38,6 @@ export default {
     getOne,
     remove,
     edit,
-    search
+    search,
+    recommend
 }

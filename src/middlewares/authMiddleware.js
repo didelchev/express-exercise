@@ -1,5 +1,6 @@
 import { JWT_SECRET } from '../constants.js';
 import jwt from '../lib/jwt.js';
+import productService from '../services/productService.js';
 
 
 export const authMiddleware = async (req, res, next) => {
@@ -39,17 +40,19 @@ export const isAuth = (req, res, next) => {
     return next();
 }
 
+
+
 export const isOwner = async (req, res, next) =>{
-    let product = await productServices.getOne(req.params.productId);
+    let product = await productService.getOne(req.params.productId);
 
     if (product.owner == req.user._id) {
-        res.redirect(`/product/${req.params.productId}/details`);
+        res.redirect(`/products/${req.params.productId}/details`);
     } else {
         next();
     }
 }
 
-async function checkIsOwner(req, res, next) {
+export async function checkIsOwner(req, res, next) {
     let product = await productServices.getOne(req.params.productId);
 
     if (product.owner == req.user._id) {
